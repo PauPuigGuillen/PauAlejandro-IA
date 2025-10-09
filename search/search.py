@@ -133,6 +133,22 @@ def depth_first_search(problem):
     print("Start's successors:", problem.get_successors(problem.get_start_state()))
     """
     "*** YOUR CODE HERE ***"
+    expandedNodes=[]
+    #solution=[]
+    frontier = util.Stack
+    frontier.push(frontier,problem.get_start_state())
+    
+    while True:
+        if frontier.is_empty():
+            return
+        expandedNodes.append(frontier.pop()) #we choose a node n from frontier
+        if expandedNodes[expandedNodes.length()-1].is_goal_state:
+            return expandedNodes
+        for child in expandedNodes[expandedNodes.length()-1].get_successors:
+            if frontier.contains(child) or expandedNodes.__contains__(child):
+                continue
+            else:
+                frontier.push(frontier,child) #we add child m to frontier if it doesn't belong either to frontier nor to expandedNodes
     util.raise_not_defined()
 
 
