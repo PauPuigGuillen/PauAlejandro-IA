@@ -136,15 +136,17 @@ def depth_first_search(problem):
     expandedNodes=[]
     #solution=[]
     frontier = util.Stack
+    frontier.__init__(frontier)
+    print("Start:", problem.get_start_state())
     frontier.push(frontier,problem.get_start_state())
-    
+   
     while True:
-        if frontier.is_empty():
+        if frontier.is_empty(frontier):
             return
-        expandedNodes.append(frontier.pop()) #we choose a node n from frontier
-        if expandedNodes[expandedNodes.length()-1].is_goal_state:
+        expandedNodes.append(frontier.pop(frontier)) #we choose a node n from frontier
+        if expandedNodes[len(expandedNodes)-1].is_goal_state():
             return expandedNodes
-        for child in expandedNodes[expandedNodes.length()-1].get_successors:
+        for child in expandedNodes[len(expandedNodes)-1].get_successors():
             if frontier.contains(child) or expandedNodes.__contains__(child):
                 continue
             else:
