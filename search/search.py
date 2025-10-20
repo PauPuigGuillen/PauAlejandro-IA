@@ -168,7 +168,37 @@ def breadth_first_search(problem):
     #solution=[]
     first_node = SearchNode(None,(problem.get_start_state(),None,0))
 
-    frontier = util.Queue
+    frontier = util.Queue()
+    frontier.push(first_node)
+    while True:
+        if frontier.is_empty():
+            return []
+
+        current_node = frontier.pop()
+        expandedNodes.append(current_node.state) #we choose a node n from frontier
+      
+        if problem.is_goal_state(current_node.state):
+            return current_node.get_path()
+
+        for child in problem.get_successors(current_node.state):
+            # frontier.list contains SearchNode objects, so compare states
+            if any(n.state == child[0] for n in frontier.list) or child[0] in expandedNodes:
+                continue
+            else:
+                child_node = SearchNode(current_node,child)
+                frontier.push(child_node) #we add child m to frontier if it doesn't belong either to frontier nor to expandedNodes
+    util.raise_not_defined()
+
+def uniform_cost_search(problem):
+    '''
+    """Search the node of least total cost first."""
+    "*** YOUR CODE HERE ***"
+
+    expandedNodes=[]
+    #solution=[]
+    first_node = SearchNode(None,(problem.get_start_state(),None,0))
+
+    frontier = util.PriorityQueue
     frontier.__init__(frontier)
     frontier.push(frontier,first_node)
     while True:
@@ -182,19 +212,19 @@ def breadth_first_search(problem):
             return current_node.get_path()
 
         for child in problem.get_successors(current_node.state):
+            child_cost = child.cost
+            child_to_push
+            if child_cost > chil
             if child[0] in frontier.list or expandedNodes.__contains__(child[0]):
                 continue
+
+
             else:
                 child_node = SearchNode(current_node,child)
                 frontier.push(frontier,child_node) #we add child m to frontier if it doesn't belong either to frontier nor to expandedNodes
-    util.raise_not_defined()
 
-def uniform_cost_search(problem):
-    """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    
     util.raise_not_defined()
-
+'''
 def null_heuristic(state, problem=None):
     """
     A heuristic function estimates the cost from the current state to the nearest
