@@ -214,14 +214,27 @@ def uniform_cost_search(problem):
             child_node = SearchNode(current_node,child)
             path_cost  = current_node.cost + child_node.cost
             
+            ''' More efficient alternative(not completed)
+            count =0
+            for n in frontier.heap:
+                if n[2].state == child_node.state or expandedNodes.__contains__(child_node.state):
+                    if n[2].cost >= path_cost:
+                        frontier.update(child_node,path_cost)
+                    break
+                    
+                else: 
+                    count+=1
+
+            if count == len(frontier.heap):
+                frontier.push(child_node,child_node.cost)
+            '''
+            
             if any(n[2].state == child_node.state for n in frontier.heap) or expandedNodes.__contains__(child_node.state):#agrupar el bucle del any() amb el la linea seguent
+                
                 for i in frontier.heap:
                     if i[2].state == child_node.state: 
-                        if i[2].cost >= path_cost:
+                        if i[2].cost > path_cost:
                             frontier.update(child_node,path_cost)
-            
-                    
-                
             else:
                 frontier.push(child_node,child_node.cost) #we add child m to frontier if it doesn't belong either to frontier nor to expandedNodes
             
@@ -238,6 +251,35 @@ def null_heuristic(state, problem=None):
 def a_star_search(problem, heuristic=null_heuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+    expandedNodes=[]
+    #solution=[]
+    first_node = SearchNode(None,(problem.get_start_state(),None,0))
+
+    frontier = util.PriorityQueue()
+    frontier.push(first_node,first_node.cost)
+    path_cost =0
+   
+    while True:
+
+        if frontier.is_empty():
+            return []
+        current_node =frontier.pop()
+        expandedNodes.append(current_node.state) #we choose a node n from frontier
+        
+        if problem.is_goal_state(current_node.state):
+            return current_node.get_path()
+        
+        for child in problem.get_successors(current_node.state):
+            child_node = SearchNode(current_node,child)
+            path_cost  = current_node.cost + child_node.cost + heuristic(current_node.state,problem)
+            if any(n[2].state == child_node.state for n in frontier.heap) or expandedNodes.__contains__(child_node.state):#agrupar el bucle del any() amb el la linea seguent
+                
+                for i in frontier.heap:
+                    if i[2].state == child_node.state: 
+                        if i[2].cost > path_cost:
+                            frontier.update(child_node,path_cost)
+            else:
+                frontier.push(child_node,child_node.cost) #we add child m to frontier if it doesn't belong either to frontier nor to expandedNodes
     util.raise_not_defined()
 
 # Abbreviations
