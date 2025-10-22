@@ -271,7 +271,7 @@ def a_star_search(problem, heuristic=null_heuristic):
         
         for child in problem.get_successors(current_node.state):
             child_node = SearchNode(current_node,child)
-            path_cost  = current_node.cost + child_node.cost + heuristic(current_node.state,problem)
+            path_cost  =  child_node.cost + heuristic(child_node.state,problem)
             if any(n[2].state == child_node.state for n in frontier.heap) or expandedNodes.__contains__(child_node.state):#agrupar el bucle del any() amb el la linea seguent
                 
                 for i in frontier.heap:
@@ -279,7 +279,7 @@ def a_star_search(problem, heuristic=null_heuristic):
                         if i[2].cost > path_cost:
                             frontier.update(child_node,path_cost)
             else:
-                frontier.push(child_node,child_node.cost) #we add child m to frontier if it doesn't belong either to frontier nor to expandedNodes
+                frontier.push(child_node,path_cost) #we add child m to frontier if it doesn't belong either to frontier nor to expandedNodes
     util.raise_not_defined()
 
 # Abbreviations
