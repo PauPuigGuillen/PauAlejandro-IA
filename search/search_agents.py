@@ -531,14 +531,21 @@ def food_heuristic(state, problem):
     problem.heuristic_info['wallCount']
     """
     position, food_grid = state
-    distances = []
+    distances = [0,0]
+    mh=0
+    min_mh = 2000000
     for i in food_grid.as_list():
-        distances.append(maze_distance(position,i,problem.starting_game_state))
+        mh = abs(position[0] - i[0]) + abs(position[1] - i[1])
+        if mh<min_mh:
+            min_mh = mh
+            distances = i
 
     if len(food_grid.as_list()) == 0:
         return 0
-    return max(distances) 
     
+    return maze_distance(position,distances,problem.starting_game_state)
+
+
 
 
 def simplified_corners_heuristic(state, problem):
