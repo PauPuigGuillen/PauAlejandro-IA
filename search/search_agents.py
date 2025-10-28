@@ -533,19 +533,22 @@ def food_heuristic(state, problem):
     position, food_grid = state
     "*** YOUR CODE HERE ***"
     
-   
+    pacman_walls = 0
+    x, y = position
+
+    neighbours = [(x, y+1), (x, y-1), (x-1, y), (x+1, y)]
+    for nx, ny in neighbours:
+        if (nx, ny) in problem.walls.as_list():
+            pacman_walls += 1
+
     distances = []
     for i in food_grid.as_list():
-        distances.append(abs(position[0]-i[0]) + abs(position[1]-i[1]))
-      
-    
+        distances.append(abs(position[0]-i[0]) + abs(position[1]-i[1])+pacman_walls*2)
+
+
     if len(food_grid.as_list()) == 0:
         return 0
-    
-
- 
-    
-    
+       
     return max(distances)
 
     
