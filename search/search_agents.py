@@ -532,14 +532,21 @@ def food_heuristic(state, problem):
     """
     position, food_grid = state
     "*** YOUR CODE HERE ***"
+    
+   
     distances = []
-    distance_sum =0
     for i in food_grid.as_list():
-        #distances.append(abs(position[0]-i[0]) + abs(position[1]-i[1]))
-        distance_sum+=abs(position[0]-i[0]) + abs(position[1]-i[1])
+        distances.append(abs(position[0]-i[0]) + abs(position[1]-i[1]))
+      
+    
     if len(food_grid.as_list()) == 0:
         return 0
-    return distance_sum/len(food_grid.as_list())
+    
+
+ 
+    
+    
+    return max(distances)
 
     
 
