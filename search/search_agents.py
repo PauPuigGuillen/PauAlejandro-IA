@@ -531,20 +531,22 @@ def food_heuristic(state, problem):
     problem.heuristic_info['wallCount']
     """
     position, food_grid = state
-    distances = [0,0]
-    mh=0
-    min_mh = 2000000
-    for i in food_grid.as_list():
-        mh = abs(position[0] - i[0]) + abs(position[1] - i[1])
-        if mh<min_mh:
-            min_mh = mh
-            distances = i
+    if "MazeDistances" not in problem.heuristic_info: 
 
-    if len(food_grid.as_list()) == 0:
+        problem.heuristic_info['MazeDistances'] = {}  # we create the dictionary to store the maze distances between the position of the pacman and the food, to avoid computing maze_distance every time
+
+    aux = problem.heuristic_info['MazeDistances']  #we create an auxiliar variable to access the dictionary by reference 
+    distances=[]
+    for food in food_grid.as_list():  #for each food remaining we compute maze_distance if it hasn't been calculated before(isn't in the dictionary)
+        pac_food = (position,food)
+        if pac_food not in aux:
+            aux[pac_food] = maze_distance(position,food,problem.starting_game_state)
+        distances.append(aux[pac_food]) #we store each value of maze_distance in an array 
+
+    if len(food_grid.as_list())==0: #is goal state?
         return 0
+    return max(distances) #for each cell the heuristic will be the maximum value of the maze_distance "distances" array(the furthest food node)
     
-    return maze_distance(position,distances,problem.starting_game_state)
-
 
 
 
