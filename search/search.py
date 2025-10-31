@@ -134,7 +134,7 @@ def depth_first_search(problem):
     """
     "*** YOUR CODE HERE ***"
     expandedNodes=[]
-    #solution=[]
+    
     node = SearchNode(None,(problem.get_start_state(),None,0))
 
     frontier = util.Stack
@@ -148,11 +148,11 @@ def depth_first_search(problem):
         current_node =frontier.pop(frontier)
         expandedNodes.append(current_node.state) #we choose a node n from frontier
       
-        if problem.is_goal_state(current_node.state):
+        if problem.is_goal_state(current_node.state):  
             return current_node.get_path()
 
-        for child in problem.get_successors(current_node.state):
-            if frontier.contains(frontier,child[0]) or expandedNodes.__contains__(child[0]):
+        for child in problem.get_successors(current_node.state): #we search each successor of the current state
+            if frontier.contains(frontier,child[0]) or expandedNodes.__contains__(child[0]): 
                 continue
             else:
                 child_node = SearchNode(current_node,child)
@@ -178,7 +178,7 @@ def breadth_first_search(problem):
         if problem.is_goal_state(current_node.state):
             return current_node.get_path()
 
-        for child in problem.get_successors(current_node.state):
+        for child in problem.get_successors(current_node.state):  #we search each successor of the current state
             # frontier.list contains SearchNode objects, so compare states
             if any(n.state == child[0] for n in frontier.list) or child[0] in expandedNodes:
                 continue
@@ -210,28 +210,13 @@ def uniform_cost_search(problem):
         if problem.is_goal_state(current_node.state):
             return current_node.get_path()
         
-        for child in problem.get_successors(current_node.state):
+        for child in problem.get_successors(current_node.state):  #we search each successor of the current state
             child_node = SearchNode(current_node,child)
-            path_cost  = current_node.cost + child_node.cost
+            path_cost  = current_node.cost + child_node.cost  #we compute the path cost of going to the child(going to the parent+the cost from the parent to the child)
             
-            ''' More efficient alternative(not completed)
-            count =0
-            for n in frontier.heap:
-                if n[2].state == child_node.state or expandedNodes.__contains__(child_node.state):
-                    if n[2].cost >= path_cost:
-                        frontier.update(child_node,path_cost)
-                    break
-                    
-                else: 
-                    count+=1
-
-            if count == len(frontier.heap):
-                frontier.push(child_node,child_node.cost)
-            '''
-            
-            if any(n[2].state == child_node.state for n in frontier.heap) or expandedNodes.__contains__(child_node.state):#agrupar el bucle del any() amb el la linea seguent
+            if any(n[2].state == child_node.state for n in frontier.heap) or expandedNodes.__contains__(child_node.state): 
                 
-                for i in frontier.heap:
+                for i in frontier.heap: #we update the path_cost of a child already visited if the new cost is lower than before
                     if i[2].state == child_node.state: 
                         if i[2].cost > path_cost:
                             frontier.update(child_node,path_cost)
@@ -269,12 +254,12 @@ def a_star_search(problem, heuristic=null_heuristic):
         if problem.is_goal_state(current_node.state):
             return current_node.get_path()
         
-        for child in problem.get_successors(current_node.state):
-            child_node = SearchNode(current_node,child)
-            path_cost  =  child_node.cost + heuristic(child_node.state,problem)
-            if any(n[2].state == child_node.state for n in frontier.heap) or expandedNodes.__contains__(child_node.state):#agrupar el bucle del any() amb el la linea seguent
+        for child in problem.get_successors(current_node.state): #we search each successor of the current state
+            child_node = SearchNode(current_node,child) 
+            path_cost  =  child_node.cost + heuristic(child_node.state,problem) #we compute the path_cost(the cost of reaching the child + the heuristic computed for that child)
+            if any(n[2].state == child_node.state for n in frontier.heap) or expandedNodes.__contains__(child_node.state):
                 
-                for i in frontier.heap:
+                for i in frontier.heap: #we update the path_cost of a child already visited if the new cost is lower than before
                     if i[2].state == child_node.state: 
                         if i[2].cost > path_cost:
                             frontier.update(child_node,path_cost)
