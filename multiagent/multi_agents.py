@@ -74,7 +74,36 @@ class ReflexAgent(Agent):
         new_scared_times = [ghostState.scared_timer for ghostState in new_ghost_states]
         
         "*** YOUR CODE HERE ***"
-        return successor_game_state.get_score()
+        final_score = successor_game_state.get_score()
+        #min_dist_capsule = []
+        #min_distance =1000000000  
+        
+        
+        if new_food:
+            food_distances = [manhattan_distance(new_pos, food) for food in new_food]
+            min_food_distance = min(food_distances)
+            final_score+= 10/min_food_distance
+            if len(current_game_state.get_food().as_list()) < len(successor_game_state.get_food().as_list()):
+                final_score+=20
+            for ghost_state in new_ghost_states:
+                if manhattan_distance(ghost_state.get_position(), new_pos) < 4:
+                    final_score -= 1000
+            
+       
+        '''
+        for capsule in successor_game_state.get_capsules():
+          
+            manhattan_pacman_capsule = manhattan_distance(successor_game_state.get_pacman_position(),capsule)
+            if  manhattan_pacman_capsule < min_distance:
+                min_distance = manhattan_pacman_capsule
+                min_dist_capsule = capsule
+
+        manhattan_ghost_capsule = manhattan_distance(successor_game_state.get_ghost_state(1).get_position(), min_dist_capsule )
+        if min_distance < manhattan_ghost_capsule:
+            final_score += 50
+        '''
+        return final_score
+
 
 def score_evaluation_function(current_game_state):
     """
