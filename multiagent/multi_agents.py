@@ -69,25 +69,30 @@ class ReflexAgent(Agent):
         # Useful information you can extract from a GameState (pacman.py)
         successor_game_state = current_game_state.generate_pacman_successor(action)
         new_pos = successor_game_state.get_pacman_position()
-        new_food = successor_game_state.get_food()
+        new_food = successor_game_state.get_food().as_list()
         new_ghost_states = successor_game_state.get_ghost_states()
         new_scared_times = [ghostState.scared_timer for ghostState in new_ghost_states]
         
         "*** YOUR CODE HERE ***"
         final_score = successor_game_state.get_score()
-        #min_dist_capsule = []
-        #min_distance =1000000000  
+        min_dist_capsule = []
+        min_distance =1000000000  
         
         
         if new_food:
             food_distances = [manhattan_distance(new_pos, food) for food in new_food]
             min_food_distance = min(food_distances)
-            final_score+= 10/min_food_distance
+            final_score+= 10/(min_food_distance+1)
             if len(current_game_state.get_food().as_list()) < len(successor_game_state.get_food().as_list()):
                 final_score+=20
             for ghost_state in new_ghost_states:
-                if manhattan_distance(ghost_state.get_position(), new_pos) < 4:
-                    final_score -= 1000
+                if ghost_state.scared_timer > 4 and manhattan_distance(ghost_state.get_position(), new_pos) < 4:
+                    final_score+=1000
+                elif manhattan_distance(ghost_state.get_position(), new_pos) < 4 and ghost_state.scared_timer < 4 :
+                    final_score -= 500
+               
+        return final_score
+                
             
        
         '''
@@ -102,8 +107,7 @@ class ReflexAgent(Agent):
         if min_distance < manhattan_ghost_capsule:
             final_score += 50
         '''
-        return final_score
-
+       
 
 def score_evaluation_function(current_game_state):
     """
@@ -165,6 +169,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
+
+        legal_actions_pacman = game_state.get_legal_actions(0)
         util.raise_not_defined()
     
 
