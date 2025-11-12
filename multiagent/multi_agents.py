@@ -169,8 +169,33 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
+        
+        if game_state.is_win():
+            return self.evaluation_function(game_state)
+        
+        else:
+            count+=1
+            max_score = -100000
+            min_score = 100000
+            for agent in range(0,game_state.get_num_agents()):
+                legal_actions = game_state.get_legal_actions(agent)
+                if agent == 0: #max
+                    for action in legal_actions:
+                        score = self.get_action(game_state.generate_successor(agent,action))
+                        if max_score < score:
+                            best_max_move = action
+                    return best_max_move
+                else: #min
+                    for action in legal_actions:
+                        score = self.get_action(game_state.generate_successor(agent,action))
+                        if min_score > score:
+                            best_min_move = action
+                        
+                    return best_min_move
+            
 
-        legal_actions_pacman = game_state.get_legal_actions(0)
+
+        
         util.raise_not_defined()
     
 
