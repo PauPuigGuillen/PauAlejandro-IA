@@ -169,37 +169,49 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        count = 0
-        best_max_move = None
-        best_min_move = None
-        if game_state.is_win() or game_state.is_lose() or count == self.depth:
-            return self.evaluation_function(game_state)
         
-        else:
+        def value(game_state, agent, depth):
+            if game_state.is_win() or game_state.is_lose() or depth == self.depth:
+                return self.evaluation_function(game_state), None
             
-            max_score = -100000
-            min_score = 100000
-            for agent in range(0,game_state.get_num_agents()):
-                legal_actions = game_state.get_legal_actions(agent)
-                if agent == 0: #max
-                    for action in legal_actions:
-                        score = self.evaluation_function(game_state.generate_successor(agent,action))
-                        if max_score < score:
-                            best_max_move = action
-                    return best_max_move
-                else: #min
-                    for action in legal_actions:
-                        score = self.evaluation_function(game_state.generate_successor(agent,action))
-                        if min_score > score:
-                            best_min_move = action
-                        count +=1
-                        
-                    return best_min_move
+            legal_actions = game_state.get_legal_actions(agent)
             
+            if agent == 0: #max
+                max_score = -100000
+                max_action = None
+                for action in legal_actions:
+                    successor = game_state.generate_successor(agent, action)
+                    score, _ = value(successor, 1, depth)
+                    if score > max_score:
+                        max_score = score
+                        max_action = action
+                return max_score, max_action
+            
+            else: #min
+                min_score = 100000
+                min_action = None
+                next_agent = agent + 1
+                next_depth = depth
+                
+                if next_agent == game_state.get_num_agents():
+                    next_agent = 0
+                    next_depth = depth + 1
+                
+                for action in legal_actions:
+                    successor = game_state.generate_successor(agent, action)
+                    score, _ = value(successor, next_agent, next_depth)
+                    if score < min_score:
+                        min_score = score
+                        min_action = action
+                
+                return min_score, min_action
 
+        _,best_action = value(game_state,0,0)
+        return best_action
+        
 
         
-        util.raise_not_defined()
+       
     
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
@@ -212,7 +224,47 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluation_function
         """
         "*** YOUR CODE HERE ***"
-        util.raise_not_defined()
+
+        def value(game_state, agent, depth):
+            if game_state.is_win() or game_state.is_lose() or depth == self.depth:
+                return self.evaluation_function(game_state), None
+            
+            legal_actions = game_state.get_legal_actions(agent)
+            
+            if agent == 0: #max
+                max_score = -100000
+                max_action = None
+                for action in legal_actions:
+                    successor = game_state.generate_successor(agent, action)
+                    score, _ = value(successor, 1, depth)
+                    if score > max_score:
+                        max_score = score
+                        max_action = action
+                return max_score, max_action
+            
+            else: #min
+                min_score = 100000
+                min_action = None
+                next_agent = agent + 1
+                next_depth = depth
+                
+                if next_agent == game_state.get_num_agents():
+                    next_agent = 0
+                    next_depth = depth + 1
+                
+                for action in legal_actions:
+                    successor = game_state.generate_successor(agent, action)
+                    score, _ = value(successor, next_agent, next_depth)
+                    if score < min_score:
+                        min_score = score
+                        min_action = action
+                
+                return min_score, min_action
+
+        _,best_action = value(game_state,0,0)
+        return best_action
+    
+        
 
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
