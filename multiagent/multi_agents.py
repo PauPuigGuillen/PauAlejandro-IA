@@ -79,16 +79,16 @@ class ReflexAgent(Agent):
         min_distance =1000000000  
         
         
-        if new_food:
+        if new_food: #As long as there is food we encourage pacman to eat them based on manhattan distances
             food_distances = [manhattan_distance(new_pos, food) for food in new_food]
             min_food_distance = min(food_distances)
             final_score+= 10/(min_food_distance+1)
-            if len(current_game_state.get_food().as_list()) < len(successor_game_state.get_food().as_list()):
+            if len(current_game_state.get_food().as_list()) < len(successor_game_state.get_food().as_list()): #We also encourage pacman to go to any game_state where there is less food
                 final_score+=20
             for ghost_state in new_ghost_states:
-                if ghost_state.scared_timer > 4 and manhattan_distance(ghost_state.get_position(), new_pos) < 4:
+                if ghost_state.scared_timer > 4 and manhattan_distance(ghost_state.get_position(), new_pos) < 4: #Maximum priority if pacman can kill a near ghost
                     final_score+=1000
-                elif manhattan_distance(ghost_state.get_position(), new_pos) < 4 and ghost_state.scared_timer < 4 :
+                elif manhattan_distance(ghost_state.get_position(), new_pos) < 4 and ghost_state.scared_timer < 4 : #Minimum priority if pacman is close to a ghost 
                     final_score -= 500
                
         return final_score
@@ -171,18 +171,19 @@ class MinimaxAgent(MultiAgentSearchAgent):
         "*** YOUR CODE HERE ***"
         
         def value(game_state, agent, depth):
+
             if game_state.is_win() or game_state.is_lose() or depth == self.depth:
                 return self.evaluation_function(game_state), None
             
             legal_actions = game_state.get_legal_actions(agent)
             
-            if agent == 0: #max
+            if agent == 0: #max(pacman)
                 max_score = -100000
                 max_action = None
-                for action in legal_actions:
+                for action in legal_actions: #we compute every successor for any legal action and pass on to the next agent(first ghost)
                     successor = game_state.generate_successor(agent, action)
                     score, _ = value(successor, 1, depth)
-                    if score > max_score:
+                    if score > max_score: #max node so we update the value if the outcome is better than the current max score
                         max_score = score
                         max_action = action
                 return max_score, max_action
@@ -197,16 +198,16 @@ class MinimaxAgent(MultiAgentSearchAgent):
                     next_agent = 0
                     next_depth = depth + 1
                 
-                for action in legal_actions:
+                for action in legal_actions: #we compute every successor for any legal action and pass on to the next agent(next ghost, and if we are in the last ghost the next agent will be PACMAN(0))
                     successor = game_state.generate_successor(agent, action)
                     score, _ = value(successor, next_agent, next_depth)
-                    if score < min_score:
+                    if score < min_score: #min node so we update the value if the outcome is less than the current min score
                         min_score = score
                         min_action = action
                 
                 return min_score, min_action
 
-        _,best_action = value(game_state,0,0)
+        _,best_action = value(game_state,0,0) #we initialize minimax with pacman and depth 0
         return best_action
         
 
@@ -224,8 +225,10 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluation_function
         """
         "*** YOUR CODE HERE ***"
+        
 
-        def value(game_state, agent, depth):
+        def value(game_state, agent, depth,alpha,beta):
+            
             if game_state.is_win() or game_state.is_lose() or depth == self.depth:
                 return self.evaluation_function(game_state), None
             
@@ -236,10 +239,13 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 max_action = None
                 for action in legal_actions:
                     successor = game_state.generate_successor(agent, action)
-                    score, _ = value(successor, 1, depth)
+                    score, _ = value(successor, 1, depth,alpha,beta)
                     if score > max_score:
                         max_score = score
                         max_action = action
+                    alpha = max(alpha,max_score) #update alpha 
+                    if beta < max_score: # we do a beta cut 
+                        break
                 return max_score, max_action
             
             else: #min
@@ -254,14 +260,18 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 
                 for action in legal_actions:
                     successor = game_state.generate_successor(agent, action)
-                    score, _ = value(successor, next_agent, next_depth)
+                    score, _ = value(successor, next_agent, next_depth,alpha,beta)
                     if score < min_score:
                         min_score = score
                         min_action = action
-                
+                    beta = min(beta,min_score) #update beta
+                    if alpha > min_score: # we do an alpha cut
+                        break
                 return min_score, min_action
-
-        _,best_action = value(game_state,0,0)
+            
+        
+        
+        _,best_action = value(game_state,0,0,-100000,1000000) #we initialize value with pacman, depth 0, alpha -inf, beta +inf
         return best_action
     
         
